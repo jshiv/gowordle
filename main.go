@@ -11,7 +11,6 @@ import (
 	"github.com/briandowns/spinner"
 	"github.com/manifoldco/promptui"
 
-	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 )
 
@@ -32,19 +31,16 @@ func main() {
 
 	sl := strings.Split(string(sgb_words), "\n")
 
-	for i := 1; i <= 5; i++ {
-		io := humanize.Ordinal(i)
-		color.Cyan(io + " WORDLE")
-		lettersHas, lettersHasNot, kl := getPrompt()
-		s := spinner.New(spinner.CharSets[26], 100*time.Millisecond) // Build our new spinner
-		s.Start()                                                    // Start the spinner
-		time.Sleep(2 * time.Second)                                  // Run for some time to simulate work
-		s.Stop()
-		hasWords := hasWordle(sl, lettersHas, lettersHasNot, kl)
-		if len(hasWords) <= 1 {
-			color.Cyan("No More Wordles")
-			os.Exit(0)
-		}
+	color.Cyan("GO WORDLE")
+	lettersHas, lettersHasNot, kl := getPrompt()
+	s := spinner.New(spinner.CharSets[26], 100*time.Millisecond) // Build our new spinner
+	s.Start()                                                    // Start the spinner
+	time.Sleep(2 * time.Second)                                  // Run for some time to simulate work
+	s.Stop()
+	hasWords := hasWordle(sl, lettersHas, lettersHasNot, kl)
+	if len(hasWords) == 0 {
+		color.Red("No Words :-|")
+		os.Exit(0)
 	}
 
 }
