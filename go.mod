@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/briandowns/spinner v1.18.0
+	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.7.0
 	github.com/manifoldco/promptui v0.9.0
 )
