@@ -11,6 +11,7 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/dustin/go-humanize"
+	"github.com/dustin/go-humanize/english"
 	"github.com/manifoldco/promptui"
 
 	"github.com/fatih/color"
@@ -31,12 +32,13 @@ type knownLetters struct {
 }
 
 // knownNotLetters: letters are known to not be in a specific position
+// TODO: should compare to []string because multipule letters can be known to not be.
 type knownIsNotLetters struct {
-	firstLetterIsNot  string
-	secondLetterIsNot string
-	thridLetterIsNot  string
-	fourthLetterIsNot string
-	fifthLetterIsNot  string
+	firstLetterIsNot  []string
+	secondLetterIsNot []string
+	thridLetterIsNot  []string
+	fourthLetterIsNot []string
+	fifthLetterIsNot  []string
 }
 
 func main() {
@@ -49,20 +51,20 @@ func main() {
 	for _, guess := range guesses {
 		knl.getNotPositions(guess, kl, lettersHas)
 	}
-	if knl.firstLetterIsNot != "" {
-		color.Cyan("1st letter is not: " + knl.firstLetterIsNot)
+	if len(knl.firstLetterIsNot) != 0 {
+		color.Cyan("1st letter is not: " + english.WordSeries(knl.firstLetterIsNot, ","))
 	}
-	if knl.secondLetterIsNot != "" {
-		color.Cyan("2nd letter is not: " + knl.secondLetterIsNot)
+	if len(knl.secondLetterIsNot) != 0 {
+		color.Cyan("2nd letter is not: " + english.WordSeries(knl.secondLetterIsNot, ","))
 	}
-	if knl.thridLetterIsNot != "" {
-		color.Cyan("3rd letter is not: " + knl.thridLetterIsNot)
+	if len(knl.thridLetterIsNot) != 0 {
+		color.Cyan("3rd letter is not: " + english.WordSeries(knl.thridLetterIsNot, ","))
 	}
-	if knl.fourthLetterIsNot != "" {
-		color.Cyan("4th letter is not: " + knl.fourthLetterIsNot)
+	if len(knl.fourthLetterIsNot) != 0 {
+		color.Cyan("4th letter is not: " + english.WordSeries(knl.fourthLetterIsNot, ","))
 	}
-	if knl.fifthLetterIsNot != "" {
-		color.Cyan("5th letter is not: " + knl.fifthLetterIsNot)
+	if len(knl.fifthLetterIsNot) != 0 {
+		color.Cyan("5th letter is not: " + english.WordSeries(knl.fifthLetterIsNot, ","))
 	}
 
 	s := spinner.New(spinner.CharSets[26], 100*time.Millisecond) // Build our new spinner
@@ -250,9 +252,9 @@ func hasPositions(word string, kl knownLetters, knl knownIsNotLetters) bool {
 		b = b && (c == kl.firstLetter)
 	}
 
-	if knl.firstLetterIsNot != "" {
+	if len(knl.firstLetterIsNot) > 0 {
 		c := string(word[0])
-		b = b && (c != knl.firstLetterIsNot)
+		b = b && !strings.Contains(strings.Join(knl.firstLetterIsNot, ""), c)
 	}
 
 	if kl.secondLetter != "" {
@@ -260,9 +262,9 @@ func hasPositions(word string, kl knownLetters, knl knownIsNotLetters) bool {
 		b = b && (c == kl.secondLetter)
 	}
 
-	if knl.secondLetterIsNot != "" {
+	if len(knl.secondLetterIsNot) > 0 {
 		c := string(word[1])
-		b = b && (c != knl.secondLetterIsNot)
+		b = b && !strings.Contains(strings.Join(knl.secondLetterIsNot, ""), c)
 	}
 
 	if kl.thridLetter != "" {
@@ -270,9 +272,9 @@ func hasPositions(word string, kl knownLetters, knl knownIsNotLetters) bool {
 		b = b && (c == kl.thridLetter)
 	}
 
-	if knl.thridLetterIsNot != "" {
+	if len(knl.thridLetterIsNot) > 0 {
 		c := string(word[2])
-		b = b && (c != knl.thridLetterIsNot)
+		b = b && !strings.Contains(strings.Join(knl.thridLetterIsNot, ""), c)
 	}
 
 	if kl.fourthLetter != "" {
@@ -280,9 +282,9 @@ func hasPositions(word string, kl knownLetters, knl knownIsNotLetters) bool {
 		b = b && (c == kl.fourthLetter)
 	}
 
-	if knl.fourthLetterIsNot != "" {
+	if len(knl.fourthLetterIsNot) > 0 {
 		c := string(word[3])
-		b = b && (c != knl.fourthLetterIsNot)
+		b = b && !strings.Contains(strings.Join(knl.fourthLetterIsNot, ""), c)
 	}
 
 	if kl.fifthLetter != "" {
@@ -290,9 +292,9 @@ func hasPositions(word string, kl knownLetters, knl knownIsNotLetters) bool {
 		b = b && (c == kl.fifthLetter)
 	}
 
-	if knl.fifthLetterIsNot != "" {
+	if len(knl.fifthLetterIsNot) > 0 {
 		c := string(word[4])
-		b = b && (c != knl.fifthLetterIsNot)
+		b = b && !strings.Contains(strings.Join(knl.fifthLetterIsNot, ""), c)
 	}
 
 	return b
@@ -310,30 +312,30 @@ func (knl *knownIsNotLetters) getNotPositions(guess string, kl knownLetters, has
 		case 0:
 			// does not match the position we know it is in
 			if kl.firstLetter != l {
-				knl.firstLetterIsNot = l
+				knl.firstLetterIsNot = append(knl.firstLetterIsNot, l)
 			}
 		case 1:
 
 			if kl.secondLetter != l {
-				knl.secondLetterIsNot = l
+				knl.secondLetterIsNot = append(knl.secondLetterIsNot, l)
 			}
 
 		case 2:
 
 			if kl.thridLetter != l {
-				knl.thridLetterIsNot = l
+				knl.thridLetterIsNot = append(knl.thridLetterIsNot, l)
 			}
 
 		case 3:
 
 			if kl.fourthLetter != l {
-				knl.fourthLetterIsNot = l
+				knl.fourthLetterIsNot = append(knl.fourthLetterIsNot, l)
 			}
 
 		case 4:
 
 			if kl.fifthLetter != l {
-				knl.fifthLetterIsNot = l
+				knl.fifthLetterIsNot = append(knl.fifthLetterIsNot, l)
 			}
 		}
 	}
