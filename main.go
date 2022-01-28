@@ -141,29 +141,14 @@ func getPrompt() ([]string, []string, string, knownLetters) {
 
 	lettersHas := strings.Split(ra, "")
 
-	pb := promptui.Prompt{
-		Label:   "Wordle does not have the letters",
-		Default: "",
-	}
-
-	rb, err := pb.Run()
-
-	if err == promptui.ErrInterrupt {
-		os.Exit(0)
-	}
-
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-	}
-
-	lettersHasNot := rb
-	//If the user accidently inputs a letter in the has not section and in the has section, remove it from has not
+	lettersHasNot := strings.Join(guesses, "")
 	for _, l := range lettersHas {
-		if strings.Contains(lettersHasNot, l) {
-			color.Cyan("Keeping the letter " + l)
-			lettersHasNot = strings.ReplaceAll(lettersHasNot, l, "")
-		}
+		lettersHasNot = strings.ReplaceAll(lettersHasNot, l, "")
 	}
+
+	lettersHasNot = removeDuplicates(lettersHasNot)
+
+	color.Cyan("Wordle does not have the letters: " + strings.Join(strings.Split(lettersHasNot, ""), ","))
 
 	p1 := promptui.Prompt{
 		Label:   "Known First Letter",
@@ -242,6 +227,20 @@ func getPrompt() ([]string, []string, string, knownLetters) {
 
 	return guesses, lettersHas, lettersHasNot, knownLetters{firstLetter: l1, secondLetter: l2, thridLetter: l3, fourthLetter: l4, fifthLetter: l5}
 
+}
+
+func removeDuplicates(s string) string {
+	set := make(map[string]bool)
+	for _, c := range s {
+		set[string(c)] = true
+	}
+
+	keys := make([]string, 0, len(set))
+	for k := range set {
+		keys = append(keys, k)
+	}
+
+	return strings.Join(keys, "")
 }
 
 func hasChars(s string, chars []string) bool {
