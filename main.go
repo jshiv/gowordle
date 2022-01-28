@@ -157,6 +157,13 @@ func getPrompt() ([]string, []string, string, knownLetters) {
 	}
 
 	lettersHasNot := rb
+	//If the user accidently inputs a letter in the has not section and in the has section, remove it from has not
+	for _, l := range lettersHas {
+		if strings.Contains(lettersHasNot, l) {
+			color.Cyan("Keeping the letter " + l)
+			lettersHasNot = strings.ReplaceAll(lettersHasNot, l, "")
+		}
+	}
 
 	p1 := promptui.Prompt{
 		Label:   "Known First Letter",
